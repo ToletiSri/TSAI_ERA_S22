@@ -3,7 +3,12 @@
 This folder consists of Assignment-6 from ERA course offered by - TSAI(The school of AI). 
 Follow https://theschoolof.ai/ for more updates on TSAI
 
-Assignment-6 
+Assignment-6 consists of 2 parts
+
+## Part 1 - Back Propogation
+Refer to the folder BackPropogation. This folder consists of a detailed [README.md]() file, which briefly describes the steps and formula used in backpropogation. 
+
+## Part 2 - CNN Model Trained with MNIST Data 
 Make use the following concepts discussed until Session 6 in creating a CNN model
 - How many layers,
 - MaxPooling,
@@ -78,7 +83,9 @@ Params size (MB): 0.07
 Estimated Total Size (MB): 1.00
 ----------------------------------------------------------------
 
-## API Reference - model.py
+## API References
+
+### API Reference - model.py
 
 #### Get CNN model
 
@@ -87,7 +94,7 @@ Estimated Total Size (MB): 1.00
 ```
 
 
-## API Reference - utils.py
+### API Reference - utils.py
 
 #### CUDA Availability
 
