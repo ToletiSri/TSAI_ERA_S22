@@ -6,7 +6,7 @@ Follow https://theschoolof.ai/ for more updates on TSAI
 Assignment-6 consists of 2 parts
 
 ## Part 1 - Back Propogation
-Refer to the folder BackPropogation. This folder consists of a detailed [README.md]() file, which briefly describes the steps and formula used in backpropogation. 
+Refer to the folder BackPropogation. This folder consists of a detailed [README.md](https://github.com/ToletiSri/TSAI_ERA_Assignments/blob/main/S6/BackPropogation/README.md) file, which briefly describes the steps and formula used in backpropogation. 
 
 ## Part 2 - CNN Model Trained with MNIST Data 
 Make use the following concepts discussed until Session 6 in creating a CNN model
@@ -72,16 +72,16 @@ The custom model has the following model parameters:
            Conv2d-27             [-1, 10, 7, 7]             170
       BatchNorm2d-28             [-1, 10, 7, 7]              20
         AvgPool2d-29             [-1, 10, 1, 1]               0
-================================================================
-Total params: 17,462
-Trainable params: 17,462
-Non-trainable params: 0
-----------------------------------------------------------------
-Input size (MB): 0.00
-Forward/backward pass size (MB): 0.93
-Params size (MB): 0.07
-Estimated Total Size (MB): 1.00
-----------------------------------------------------------------
+
+Total params: **17,462**\
+Trainable params: 17,462\
+Non trainable-trainable params: 0\
+
+Input size (MB): 0.00\
+Forward/backward pass size (MB): 0.93\
+Params size (MB): 0.07\
+Estimated Total Size (MB): 1.00\
+
 
 ## API References
 
