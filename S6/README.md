@@ -9,33 +9,13 @@ Assignment-6 consists of 2 parts
 Refer to the folder BackPropogation. This folder consists of a detailed [README.md](https://github.com/ToletiSri/TSAI_ERA_Assignments/blob/main/S6/BackPropogation/README.md) file, which briefly describes the steps and formula used in backpropogation. 
 
 ## Part 2 - CNN Model Trained with MNIST Data 
-Make use the following concepts discussed until Session 6 in creating a CNN model
-- How many layers,
-- MaxPooling,
-- 1x1 Convolutions,
-- 3x3 Convolutions,
-- Receptive Field,
-- SoftMax,
-- Learning Rate,
-- Kernels and how do we decide the number of kernels?
-- Batch Normalization,
-- Image Normalization,
-- Position of MaxPooling,
-- Concept of Transition Layers,
-- Position of Transition Layer,
-- DropOut
-- When do we introduce DropOut, or when do we know we have some overfitting
-- The distance of MaxPooling from Prediction,
-- The distance of Batch Normalization from Prediction,
-- When do we stop convolutions and go ahead with a larger kernel or some other alternative 
-- How do we know our network is not going well, comparatively, very early
-- Batch Size, and Effects of batch size
+This part of assigment makes use of the concepts discussed until Session 6 in creating a CNN model that has less than 20k parameters and a validation accuracy > 99.4 %
 
 The assignment consists of 3 files and 1 folder
 * models.py - This file consists of our custom CNN-model.
 * utils.py - A utility of commonly used functions. Also consists of helper functions to train and test the model. 
 * S6.ipnyb - Jupyter notebook that consists of the assignment - training and testing MNIST data with our custom CNN model.
-*  S6 - Assignment QnA - Folder consisting of an example that implements backpropogation from scratch
+* BackPropogation - Folder consisting of an example that implements backpropogation from scratch
 
 The custom model has the following model parameters:
 
