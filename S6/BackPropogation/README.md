@@ -1,9 +1,9 @@
 # Learn Backpropogation by Implementing it From Scratch
-This repository and its README serves as a tutorial of how to implement Backpropagation in Neural Networks from scratch. Please refer to the excel - [BackPropogation.xlsx](https://github.com/ToletiSri/TSAI_ERA_Assignments/blob/main/S6/S6%20-%20Assignment%20QnA/BackPropagation.xlsx)
+This repository and its README serves as a tutorial of how to implement Backpropagation in Neural Networks from scratch. Please refer to the excel - [BackPropogation.xlsx](https://github.com/ToletiSri/TSAI_ERA_Assignments/blob/main/S6/BackPropogation/BackPropagation.xlsx)
 ## Neural Network
 
 Consider the following network with initial set of weights assigned as shown
-![](https://github.com/ToletiSri/TSAI_ERA_Assignments/blob/main/S6/S6%20-%20Assignment%20QnA/Network.jpg?raw=true)
+![](https://github.com/ToletiSri/TSAI_ERA_Assignments/blob/main/S6/BackPropogation/Network.jpg?raw=true)
 Where,
 - i1, i2 - Input kayers
 - h1, h2 - hidden layers
@@ -54,24 +54,24 @@ Snippet from the BackwardPropogation table
 Learning rate affects the number of iterations needed for converge. If the learning rate is too small, the convergence would take many iterations. However, if the learning rate is too high, the error could never converge as well.
 Refer below to the plots below showing Loss v/s iteration number, for different learning rates. See how learning rate has an impact on the iterations needed for convergence.
 
-Learning rate - 0.1:
-![Learning Rate - 0.1](https://github.com/ToletiSri/TSAI_ERA_Assignments/blob/main/S6/S6%20-%20Assignment%20QnA/LearningRate_0.1.jpg?raw=true) 
+Learning rate - 0.1:\
+![Learning Rate - 0.1](https://github.com/ToletiSri/TSAI_ERA_Assignments/blob/main/S6/BackPropogation/LearningRate_0.1.jpg?raw=true) 
 
 
-Learning rate - 0.2:
-![Learning Rate - 0.1](https://github.com/ToletiSri/TSAI_ERA_Assignments/blob/main/S6/S6%20-%20Assignment%20QnA/LearningRate_0.2.jpg?raw=true) 
+Learning rate - 0.2:\
+![Learning Rate - 0.1](https://github.com/ToletiSri/TSAI_ERA_Assignments/blob/main/S6/BackPropogation/LearningRate_0.2.jpg?raw=true) 
 
-Learning rate - 0.5:
-![Learning Rate - 0.1](https://github.com/ToletiSri/TSAI_ERA_Assignments/blob/main/S6/S6%20-%20Assignment%20QnA/LearningRate_0.5.jpg?raw=true) 
+Learning rate - 0.5:\
+![Learning Rate - 0.1](https://github.com/ToletiSri/TSAI_ERA_Assignments/blob/main/S6/BackPropogation/LearningRate_0.5.jpg?raw=true) 
 
-Learning rate - 1.0:
-![Learning Rate - 0.1](https://github.com/ToletiSri/TSAI_ERA_Assignments/blob/main/S6/S6%20-%20Assignment%20QnA/LearningRate_1.0.jpg?raw=true) 
+Learning rate - 1.0:\
+![Learning Rate - 0.1](https://github.com/ToletiSri/TSAI_ERA_Assignments/blob/main/S6/BackPropogation/LearningRate_1.0.jpg?raw=true) 
 
-Learning rate - 2.0:
-![Learning Rate - 0.1](https://github.com/ToletiSri/TSAI_ERA_Assignments/blob/main/S6/S6%20-%20Assignment%20QnA/LearningRate_2.0.jpg?raw=true) 
+Learning rate - 2.0:\
+![Learning Rate - 0.1](https://github.com/ToletiSri/TSAI_ERA_Assignments/blob/main/S6/BackPropogation/LearningRate_2.0.jpg?raw=true) 
 
-Learning rate - 1000(never converges):
-![Learning Rate - 0.1](https://github.com/ToletiSri/TSAI_ERA_Assignments/blob/main/S6/S6%20-%20Assignment%20QnA/LearningRate_1000.jpg?raw=true) 
+Learning rate - 1000(never converges):\
+![Learning Rate - 0.1](https://github.com/ToletiSri/TSAI_ERA_Assignments/blob/main/S6/BackPropogation/LearningRate_1000.jpg?raw=true) 
 
 **That's all on this assignment. Hope you had a good learning time!**
 
