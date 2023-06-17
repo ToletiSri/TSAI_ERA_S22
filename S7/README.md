@@ -1,4 +1,4 @@
-# The School of AI - ERA(Extensive & Reimagined AI Program) - Assignment 6
+# The School of AI - ERA(Extensive & Reimagined AI Program) - Assignment 7
 
 This folder consists of Assignment-7 from ERA course offered by - TSAI(The school of AI). 
 Follow https://theschoolof.ai/ for more updates on TSAI
