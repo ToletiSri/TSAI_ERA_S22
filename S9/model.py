@@ -11,21 +11,21 @@ class Net(nn.Module):
             nn.ReLU(),
             nn.BatchNorm2d(32),
             nn.Dropout(dropout_value)
-        ) # output_size = 32/3
+        ) # output_size = 32x32x32, RF = 3
         
         self.convblock112 = nn.Sequential(
             nn.Conv2d(in_channels=32, out_channels=32, kernel_size=(3, 3), padding=1, dilation = 1, bias=False),
             nn.ReLU(),
             nn.BatchNorm2d(32),
             nn.Dropout(dropout_value)
-        ) # output_size = 32/3
+        ) # output_size = 32x32x32; RF = 5
         
         self.convblock113 = nn.Sequential(
             nn.Conv2d(in_channels=32, out_channels=32, kernel_size=(3, 3), padding=1, dilation = 1, bias=False),
             nn.ReLU(),
             nn.BatchNorm2d(32),
             nn.Dropout(dropout_value)
-        ) # output_size = 32/3
+        ) # output_size =  32x32x32; RF = 7
 
         
         self.convblock12 = nn.Sequential(
@@ -33,7 +33,7 @@ class Net(nn.Module):
             nn.ReLU(),
             nn.BatchNorm2d(32),
             nn.Dropout(dropout_value)
-        ) # output_size = 32/5
+        ) # output_size = 32x32x32; RF = 11
 
          
         self.convblock13 = nn.Sequential(
@@ -41,15 +41,15 @@ class Net(nn.Module):
             nn.ReLU(),
             nn.BatchNorm2d(64),
             nn.Dropout(dropout_value)
-        ) # output_size = 32/5
+        ) # output_size = 28x28x64; RF = 15
 
         # TRANSITION BLOCK 1
         self.transBlock1 = nn.Sequential(
             nn.Conv2d(in_channels=64, out_channels=32, kernel_size=(1, 1), padding=0, bias=False),
             #nn.BatchNorm2d(64),
         ) # output_size = 32/5
-        #self.pool1 = nn.MaxPool2d(2, 2) # output_size = 16/6/2
-
+        #self.pool1 = nn.MaxPool2d(2, 2) # output_size =28x28x32; RF = 15
+        
         # CONVOLUTION BLOCK 2
         self.convblock21 = nn.Sequential(
             #nn.Conv2d(in_channels=32, out_channels=64, kernel_size=(3, 3), padding=1, dilation = 1, bias=False),
@@ -59,7 +59,7 @@ class Net(nn.Module):
             nn.ReLU(),            
             nn.BatchNorm2d(64),
             nn.Dropout(dropout_value)
-        ) # output_size = 16/10/2
+        )  # output_size =28x28x64; RF = 17
 
         self.convblock22 = nn.Sequential(
             #nn.Conv2d(in_channels=64, out_channels=64, kernel_size=(3, 3), padding=1, dilation = 1, bias=False),
@@ -69,20 +69,20 @@ class Net(nn.Module):
             nn.ReLU(),            
             nn.BatchNorm2d(64),
             nn.Dropout(dropout_value)
-        ) # output_size = 16/10/2
+        ) # output_size =28x28x64; RF = 19
 
         self.convblock23 = nn.Sequential(
             nn.Conv2d(in_channels=64, out_channels=64, kernel_size=(3, 3), padding=0, dilation = 3,  bias=False),
             nn.ReLU(),            
             nn.BatchNorm2d(64),
             nn.Dropout(dropout_value)
-        ) # output_size = 16/10/2
+        ) # output_size =22x22x64; RF = 25
 
          # TRANSITION BLOCK 2
         self.transBlock2 = nn.Sequential(
             nn.Conv2d(in_channels=64, out_channels=32, kernel_size=(1, 1), padding=0, bias=False),
         ) # output_size = 32/5
-        #self.pool1 = nn.MaxPool2d(2, 2) # output_size = 16/6/2
+        #self.pool1 = nn.MaxPool2d(2, 2) # output_size =22x22x32; RF = 25
 
          # CONVOLUTION BLOCK 3
 
@@ -94,7 +94,7 @@ class Net(nn.Module):
             nn.ReLU(),            
             nn.BatchNorm2d(64),
             nn.Dropout(dropout_value)
-        ) # output_size = 16/14/2
+        ) #  output_size =22x22x64; RF = 27
 
         self.convblock32 = nn.Sequential(
             #nn.Conv2d(in_channels=64, out_channels=64, kernel_size=(3, 3), padding=1, dilation = 1, bias=False),
@@ -104,19 +104,19 @@ class Net(nn.Module):
             nn.ReLU(),            
             nn.BatchNorm2d(64),
             nn.Dropout(dropout_value)
-        ) # output_size = 16/14/2
+        ) # output_size =22x22x64; RF = 29
 
         self.convblock33 = nn.Sequential(
             nn.Conv2d(in_channels=64 , out_channels=64, kernel_size=(3, 3), padding=0, dilation = 4, bias=False),
             nn.ReLU(),            
             nn.BatchNorm2d(64),
             nn.Dropout(dropout_value)
-        ) # output_size = 16/14/2
+        ) # output_size =14x14x64; RF = 37
 
         # TRANSITION BLOCK 3
         self.transBlock3 = nn.Sequential(
             nn.Conv2d(in_channels=64, out_channels=32, kernel_size=(1, 1), padding=0, bias=False),
-        ) # output_size = 16/14/2
+        ) # output_size =14x14x32; RF = 37
         
          # CONVOLUTION BLOCK 4
 
@@ -125,25 +125,27 @@ class Net(nn.Module):
             nn.ReLU(),            
             nn.BatchNorm2d(32),
             nn.Dropout(dropout_value)
-        ) # output_size = 8/24/4
+        ) # output_size =12x12x32; RF = 39
         self.convblock42 = nn.Sequential(
             nn.Conv2d(in_channels=32, out_channels=32, kernel_size=(3, 3), padding=1, dilation=1, bias=False),
             nn.ReLU(),            
             nn.BatchNorm2d(32),
             nn.Dropout(dropout_value)
-        ) # output_size = 6/32/4
+        ) # output_size =12x12x32; RF = 41
 
         self.convblock43 = nn.Sequential(
             nn.Conv2d(in_channels=32, out_channels=32, kernel_size=(3, 3), padding=0, dilation = 4, bias=False),
             nn.ReLU(),            
             nn.BatchNorm2d(32),
             nn.Dropout(dropout_value)
-        ) # output_size = 4/40/4
+        ) # output_size =4x4x32; RF = 49
         
         # OUTPUT BLOCK
+        
+              
         self.gap = nn.Sequential(
             nn.AvgPool2d(kernel_size=4)
-        ) # output_size = 1
+        ) # output_size = 1; RF > 51
 
         self.transBlock4 = nn.Sequential(
             nn.Conv2d(in_channels=32, out_channels=10, kernel_size=(1, 1), padding=0, bias=False),
