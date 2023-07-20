@@ -85,7 +85,7 @@ The custom resnet model, defined as per the restrictions mentioned above, has th
           Dropout-35            [-1, 512, 4, 4]               0
         MaxPool2d-36            [-1, 512, 1, 1]               0
            Linear-37                   [-1, 10]           5,130
-================================================================
+------------------------------------------------------------------
 Total params: 6,573,130
 Trainable params: 6,573,130
 Non-trainable params: 0
