@@ -114,7 +114,7 @@ Estimated Total Size (MB): 53.89
 
 ### RESULTS:
 
-![](https://cldup.com/dTxpPi9lDf.thumb.png)
+![](https://github.com/ToletiSri/TSAI_ERA_Assignments/blob/main/S11/Results_GradCAM.jpg)
 
 
 ## API Reference - utils.py
