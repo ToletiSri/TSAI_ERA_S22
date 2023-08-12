@@ -35,6 +35,10 @@ class LitCustomResNet(LightningModule):
         self.learning_rate = learning_rate
         #self.num_classes = 10 #needed to calculate accuracy, to determine if single class or multiclass
         self.accuracy = Accuracy(task='multiclass',num_classes=10)
+        self.train_losses = []
+        self.test_losses = []
+        self.train_accs = []
+        self.test_accs = []
         
         # Preparation Layer
         self.convblockPreparation = nn.Sequential(
@@ -151,40 +155,77 @@ class LitCustomResNet(LightningModule):
     def training_step(self, batch, batch_idx):
         x, y = batch
         # Predict
-        pred = self.forward(x)
+        pred = self(x)
         # Calculate loss
         loss = self.loss_criteria(pred, y)    
         preds = torch.argmax(pred, dim=1)
-        self.accuracy(preds, y)
+        acc = self.accuracy(preds, y)
 
         # Calling self.log will surface up scalars for you in TensorBoard
-        self.log("train_loss", loss, prog_bar=True)
-        self.log("train_acc", self.accuracy, prog_bar=True)
+        self.log("tr_loss", loss, prog_bar=True)
+        self.log("tr_acc", acc, prog_bar=True)
+        self.train_loss = loss
+        self.train_acc = acc
         return loss
 
     def validation_step(self, batch, batch_idx):
         x, y = batch
         # Predict
-        pred = self.forward(x)
+        pred = self(x)
         # Calculate loss
         loss = self.loss_criteria(pred, y)        
     
         preds = torch.argmax(pred, dim=1)
-        self.accuracy(preds, y)
+        acc = self.accuracy(preds, y)
 
         # Calling self.log will surface up scalars for you in TensorBoard
-        self.log("val_loss", loss, prog_bar=True)
-        self.log("val_acc", self.accuracy, prog_bar=True)
+        self.log("vl_loss", loss, prog_bar=True)
+        self.log("vl_acc", acc, prog_bar=True)
+        self.val_loss = loss
+        self.val_acc = acc
         return loss
-
+    
+    def on_train_epoch_end(self):
+        self.train_accs.append(self.train_acc)
+        self.train_losses.append(self.train_loss)
+        
+    def on_validation_epoch_end(self):
+        self.test_accs.append(self.val_acc)
+        self.test_losses.append(self.val_loss)
+        
     def test_step(self, batch, batch_idx):
         # Here we just reuse the validation_step for testing
         return self.validation_step(batch, batch_idx)
     
-    def configure_optimizers(self):
-        optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate)
-        return optimizer
+    def lr_finder(self, optimizer, criterion):
+        from torch_lr_finder import LRFinder
+        lr_finder = LRFinder(self, optimizer, criterion, device="cuda")
+        lr_finder.range_test( self.train_dataloader(), end_lr=10, num_iter=200, step_mode="exp")             
+        ax, suggested_lr = lr_finder.plot(suggest_lr=True)
+        lr_finder.reset() 
+        return suggested_lr
     
+    def configure_optimizers(self):
+        from torch.optim.lr_scheduler import OneCycleLR
+        optimizer = optim.Adam(self.parameters(), lr=self.learning_rate)
+        #suggested_lr = self.lr_finder(optimizer, self.loss_criteria)
+        suggested_lr = 4.51E-02
+        steps_per_epoch = len(self.train_dataloader())
+        scheduler_dict = {
+            "scheduler":  OneCycleLR(
+        optimizer, max_lr=suggested_lr,
+        steps_per_epoch=steps_per_epoch,
+        epochs=self.trainer.max_epochs, 
+        pct_start=5/self.trainer.max_epochs,
+        three_phase=False,
+        div_factor=80,
+        final_div_factor=550,
+        ),
+            "interval": "step",
+        }
+        return {"optimizer": optimizer, "lr_scheduler": scheduler_dict}
+    
+  
     
     ####################
     # DATA RELATED HOOKS
@@ -226,26 +267,26 @@ class LitCustomResNet(LightningModule):
             cifar10_full = Cifar10SearchDataset(root='./data', train=True, download=True, transform=train_transforms)
             self.cifar10_train, self.cifar10_val = random_split(cifar10_full, [45000, 5000])
             
-            def imshow(img):
-                import matplotlib.pyplot as plt
-                import numpy as np
-                img = img / 2 + 0.5     # unnormalize
-                npimg = img.numpy()
-                plt.imshow(np.transpose(npimg, (1, 2, 0)))
-                plt.show()
+           #def imshow(img):
+           #     import matplotlib.pyplot as plt
+           #     import numpy as np
+           #     img = img / 2 + 0.5     # unnormalize
+           #     npimg = img.numpy()
+           #     plt.imshow(np.transpose(npimg, (1, 2, 0)))
+           #     plt.show()
 
-            train_loader = self.train_dataloader()
-            # get some random training images
-            dataiter = iter(train_loader)
-            images, labels = next(dataiter)
-            classes = ('plane', 'car', 'bird', 'cat',
-                       'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+            #train_loader = self.train_dataloader()
+            ## get some random training images
+            #dataiter = iter(train_loader)
+            #images, labels = next(dataiter)
+            #classes = ('plane', 'car', 'bird', 'cat',
+            #           'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
-            import torchvision
-            # show images
-            imshow(torchvision.utils.make_grid(images[:4]))
-            # print labels
-            print(' '.join(f'{classes[labels[j]]:5s}' for j in range(4)))
+            #import torchvision
+            ## show images
+            #imshow(torchvision.utils.make_grid(images[:4]))
+            ## print labels
+            #print(' '.join(f'{classes[labels[j]]:5s}' for j in range(4)))
 
         # Assign test dataset for use in dataloader(s)
         if stage == "test" or stage is None:
@@ -259,6 +300,8 @@ class LitCustomResNet(LightningModule):
 
     def test_dataloader(self):
         return DataLoader(self.cifar10_test, batch_size=512, num_workers=4, persistent_workers=True, pin_memory=True)
+    
+   
     
     
 def getModel(loss_criteria, learning_rate=1e-1):
