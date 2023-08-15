@@ -75,11 +75,11 @@ class LitYolo(LightningModule):
 
     
 
-    def validation_step(self, batch, batch_idx):
-        pass        
+    #def validation_step(self, batch, batch_idx):
+    #    pass        
 
-    def test_step(self, batch, batch_idx):
-        pass
+    #def test_step(self, batch, batch_idx):
+    #    pass
     
               
         
@@ -91,11 +91,6 @@ class LitYolo(LightningModule):
         print(f"Currently epoch {epoch}")
         print("On Train loader:")
         check_class_accuracy(self.model, self.train_dataloader(), threshold=config.CONF_THRESHOLD)
-
-       
-        
-    def on_validation_epoch_end(self):      
-        
         epoch = self.trainer.current_epoch
         if epoch > 0 and epoch % 3 == 0:
             check_class_accuracy(self.model, self.test_dataloader(), threshold=config.CONF_THRESHOLD)
@@ -113,11 +108,10 @@ class LitYolo(LightningModule):
                 box_format="midpoint",
                 num_classes=config.NUM_CLASSES,
             )
-            print(f"MAP: {mapval.item()}")    
-        
-        
-
-   
+            print(f"MAP: {mapval.item()}") 
+       
+            
+            
     def lr_finder(self, num_iter=50):
         from torch_lr_finder import LRFinder        
 
@@ -143,8 +137,8 @@ class LitYolo(LightningModule):
     def configure_optimizers(self):
         
         
-        suggested_lr = self.lr_finder() #check on self.train_dataloader
-        #suggested_lr = 1.53E-01
+        #suggested_lr = self.lr_finder() #check on self.train_dataloader
+        suggested_lr = 1.53E-01
         
         steps_per_epoch = len(self.train_dataloader())
         scheduler_dict = {
