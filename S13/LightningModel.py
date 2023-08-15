@@ -46,7 +46,6 @@ class LitYolo(LightningModule):
         ).to(config.DEVICE)
         self.losses =[]
 
-
     def forward(self, x):
         return self.model(x)
 
@@ -76,12 +75,8 @@ class LitYolo(LightningModule):
         
         mean_loss = sum(self.losses) / len(self.losses)
         
-        progress_bar_callback = self.trainer.callback_metrics.get("progress_bar", None)        
-        if progress_bar_callback:
-            # Retrieve the ProgressBar object
-            progress_bar = progress_bar_callback.main_progress_bar
-            # Now you have access to the ProgressBar and can use it as needed
-            progress_bar.set_postfix(loss=mean_loss)
+        # Calling self.log will surface up scalars for you in TensorBoard
+        self.log("mean_loss = ", mean_loss, prog_bar=True)
         
         
         
@@ -152,8 +147,8 @@ class LitYolo(LightningModule):
     def configure_optimizers(self):
         
         
-        suggested_lr = self.lr_finder() #check on self.train_dataloader
-        #suggested_lr = 1.53E-01
+        #suggested_lr = self.lr_finder() #check on self.train_dataloader
+        suggested_lr = 1.53E-01
         
         steps_per_epoch = len(self.train_dataloader())
         scheduler_dict = {
