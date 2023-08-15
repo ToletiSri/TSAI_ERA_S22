@@ -291,7 +291,7 @@ def get_evaluation_bboxes(
     train_idx = 0
     all_pred_boxes = []
     all_true_boxes = []
-    for batch_idx, (x, labels) in enumerate(tqdm(loader)):
+    for batch_idx, (x, labels) in enumerate(tqdm(loader,  position=0, leave=False)):
         x = x.to(device)
 
         with torch.no_grad():
