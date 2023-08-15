@@ -40,10 +40,10 @@ class LitYolo(LightningModule):
         )
         self.scaler = torch.cuda.amp.GradScaler()
         self.loss_fn = YoloLoss()
-         self.scaled_anchors = (
-             torch.tensor(config.ANCHORS)
-             * torch.tensor(config.S).unsqueeze(1).unsqueeze(1).repeat(1, 3, 2)
-         ).to(config.DEVICE)
+        self.scaled_anchors = (
+            torch.tensor(config.ANCHORS)
+            * torch.tensor(config.S).unsqueeze(1).unsqueeze(1).repeat(1, 3, 2)
+        ).to(config.DEVICE)
 
 
     def forward(self, x):
@@ -62,12 +62,12 @@ class LitYolo(LightningModule):
         with torch.cuda.amp.autocast():
             out = self.model(x)
             loss = (
-                self.loss_fn(out[0], y0, self.[0])
-                + self.loss_fn(out[1], y1, self.[1])
-                + self.loss_fn(out[2], y2, self.[2])
+                self.loss_fn(out[0], y0, self.scaled_anchors[0])
+                + self.loss_fn(out[1], y1, self.scaled_anchors[1])
+                + self.loss_fn(out[2], y2, self.scaled_anchors[2])
             )  
-            
-        self.scaler.scale(loss).backward()
+        self.optimizer.zero_grad() 
+        self.scaler.scale(loss).backward(retain_graph=True)
         self.scaler.step(self.optimizer)
         self.scaler.update()
         
@@ -81,18 +81,16 @@ class LitYolo(LightningModule):
     def test_step(self, batch, batch_idx):
         pass
     
-    def on_epoch_start(self):
-        if self.trainer.training:
-            plot_couple_examples(self.model, self.test_dataloader(), 0.6, 0.5, self.scaled_anchors)
-            
+              
         
     def on_train_epoch_end(self):
         if config.SAVE_MODEL:
-            save_checkpoint(self.model, self.optimizer, filename=config.CHECKPOINT_FILE)                
+            save_checkpoint(self.model, self.optimizer, filename=config.CHECKPOINT_FILE)  
+        plot_couple_examples(self.model, self.test_dataloader(), 0.6, 0.5, self.scaled_anchors)
         epoch = self.trainer.current_epoch
         print(f"Currently epoch {epoch}")
         print("On Train loader:")
-        check_class_accuracy(self.model, self.train_dataloader, threshold=config.CONF_THRESHOLD)
+        check_class_accuracy(self.model, self.train_dataloader(), threshold=config.CONF_THRESHOLD)
 
        
         
@@ -120,11 +118,8 @@ class LitYolo(LightningModule):
         
 
    
-    def lr_finder(self, optimizer, num_iter=50):
-        from torch_lr_finder import LRFinder
-        
-        
-       
+    def lr_finder(self, num_iter=50):
+        from torch_lr_finder import LRFinder        
 
         def criterion(out, y):
             y0, y1, y2 = (
@@ -148,12 +143,13 @@ class LitYolo(LightningModule):
     def configure_optimizers(self):
         
         
-        suggested_lr = self.lr_finder(self.optimizer) #check on self.train_dataloader
+        #suggested_lr = self.lr_finder() #check on self.train_dataloader
+        suggested_lr = 1.53E-01
         
         steps_per_epoch = len(self.train_dataloader())
         scheduler_dict = {
             "scheduler":  OneCycleLR(
-        optimizer, max_lr=suggested_lr,
+        self.optimizer, max_lr=suggested_lr,
         steps_per_epoch=steps_per_epoch,
         epochs=self.trainer.max_epochs, 
         pct_start=5/self.trainer.max_epochs,
@@ -164,7 +160,7 @@ class LitYolo(LightningModule):
             ),
             "interval": "step",
         }
-        return {"optimizer": optimizer, "lr_scheduler": scheduler_dict}
+        return {"optimizer": self.optimizer, "lr_scheduler": scheduler_dict}
     
     
     ####################
