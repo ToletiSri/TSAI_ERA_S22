@@ -379,7 +379,7 @@ def check_class_accuracy(model, loader, threshold):
     tot_noobj, correct_noobj = 0, 0
     tot_obj, correct_obj = 0, 0
 
-    for idx, (x, y) in enumerate(tqdm(loader)):
+    for idx, (x, y) in enumerate(tqdm(loader, position=0, leave=False)):
         x = x.to(config.DEVICE)
         with torch.no_grad():
             out = model(x)

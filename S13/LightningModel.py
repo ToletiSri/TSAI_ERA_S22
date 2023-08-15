@@ -44,6 +44,7 @@ class LitYolo(LightningModule):
             torch.tensor(config.ANCHORS)
             * torch.tensor(config.S).unsqueeze(1).unsqueeze(1).repeat(1, 3, 2)
         ).to(config.DEVICE)
+        self.losses =[]
 
 
     def forward(self, x):
@@ -58,18 +59,31 @@ class LitYolo(LightningModule):
             y[1].to(config.DEVICE),
             y[2].to(config.DEVICE),
         )
-
+        
+        
         with torch.cuda.amp.autocast():
             out = self.model(x)
             loss = (
                 self.loss_fn(out[0], y0, self.scaled_anchors[0])
                 + self.loss_fn(out[1], y1, self.scaled_anchors[1])
                 + self.loss_fn(out[2], y2, self.scaled_anchors[2])
-            )  
+            )
+        self.losses.append(loss.item())
         self.optimizer.zero_grad() 
         self.scaler.scale(loss).backward(retain_graph=True)
         self.scaler.step(self.optimizer)
         self.scaler.update()
+        
+        mean_loss = sum(self.losses) / len(self.losses)
+        
+        progress_bar_callback = self.trainer.callback_metrics.get("progress_bar", None)        
+        if progress_bar_callback:
+            # Retrieve the ProgressBar object
+            progress_bar = progress_bar_callback.main_progress_bar
+            # Now you have access to the ProgressBar and can use it as needed
+            progress_bar.set_postfix(loss=mean_loss)
+        
+        
         
         return loss
 
@@ -108,7 +122,8 @@ class LitYolo(LightningModule):
                 box_format="midpoint",
                 num_classes=config.NUM_CLASSES,
             )
-            print(f"MAP: {mapval.item()}") 
+            print(f"MAP: {mapval.item()}")
+            self.losses =[]
        
             
             
@@ -138,7 +153,7 @@ class LitYolo(LightningModule):
         
         
         #suggested_lr = self.lr_finder() #check on self.train_dataloader
-        suggested_lr = 1.53E-03
+        suggested_lr = 1.53E-01
         
         steps_per_epoch = len(self.train_dataloader())
         scheduler_dict = {
