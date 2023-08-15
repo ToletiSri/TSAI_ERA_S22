@@ -40,6 +40,10 @@ class LitYolo(LightningModule):
         )
         self.scaler = torch.cuda.amp.GradScaler()
         self.loss_fn = YoloLoss()
+         self.scaled_anchors = (
+             torch.tensor(config.ANCHORS)
+             * torch.tensor(config.S).unsqueeze(1).unsqueeze(1).repeat(1, 3, 2)
+         ).to(config.DEVICE)
 
 
     def forward(self, x):
@@ -58,9 +62,9 @@ class LitYolo(LightningModule):
         with torch.cuda.amp.autocast():
             out = self.model(x)
             loss = (
-                self.loss_fn(out[0], y0, scaled_anchors[0])
-                + self.loss_fn(out[1], y1, scaled_anchors[1])
-                + self.loss_fn(out[2], y2, scaled_anchors[2])
+                self.loss_fn(out[0], y0, self.[0])
+                + self.loss_fn(out[1], y1, self.[1])
+                + self.loss_fn(out[2], y2, self.[2])
             )  
             
         self.scaler.scale(loss).backward()
@@ -120,10 +124,7 @@ class LitYolo(LightningModule):
         from torch_lr_finder import LRFinder
         
         
-        self.scaled_anchors = (
-            torch.tensor(config.ANCHORS)
-            * torch.tensor(config.S).unsqueeze(1).unsqueeze(1).repeat(1, 3, 2)
-        ).to(config.DEVICE)
+       
 
         def criterion(out, y):
             y0, y1, y2 = (
@@ -132,9 +133,9 @@ class LitYolo(LightningModule):
                     y[2].to(config.DEVICE),
                 )
             loss = (
-                        self.loss_fn(out[0], y0, scaled_anchors[0])
-                        + self.loss_fn(out[1], y1, scaled_anchors[1])
-                        + self.loss_fn(out[2], y2, scaled_anchors[2])
+                        self.loss_fn(out[0], y0, self.scaled_anchors[0])
+                        + self.loss_fn(out[1], y1, self.scaled_anchors[1])
+                        + self.loss_fn(out[2], y2, self.scaled_anchors[2])
                     )
             return loss
         
