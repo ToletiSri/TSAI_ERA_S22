@@ -147,8 +147,8 @@ class LitYolo(LightningModule):
     def configure_optimizers(self):
         
         
-        suggested_lr = self.lr_finder() #check on self.train_dataloader
-        #suggested_lr = 1.53E-01
+        #suggested_lr = self.lr_finder() #check on self.train_dataloader
+        suggested_lr = 6.25E-03
         
         steps_per_epoch = len(self.train_dataloader())
         scheduler_dict = {
@@ -159,7 +159,7 @@ class LitYolo(LightningModule):
         pct_start=5/self.trainer.max_epochs,
         three_phase=False,
         div_factor=80,
-        final_div_factor=100,
+        final_div_factor=200,
         anneal_strategy='linear',
             ),
             "interval": "step",
