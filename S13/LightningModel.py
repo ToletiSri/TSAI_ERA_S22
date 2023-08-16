@@ -76,9 +76,8 @@ class LitYolo(LightningModule):
         mean_loss = sum(self.losses) / len(self.losses)
         
         # Calling self.log will surface up scalars for you in TensorBoard
-        self.log("mean_loss = ", mean_loss, prog_bar=True)
-        
-        #self.scheduler.step()
+        self.log("mean_loss = ", mean_loss, prog_bar=True)  
+       
         
         
         return loss
@@ -96,14 +95,13 @@ class LitYolo(LightningModule):
     def on_train_epoch_end(self):
         if config.SAVE_MODEL:
             save_checkpoint(self.model, self.optimizer, filename=config.CHECKPOINT_FILE)
-        epoch = self.trainer.current_epoch
-        if epoch > 0 :
+        epoch = self.trainer.current_epoch + 1
+        if epoch > 1 :
             plot_couple_examples(self.model, self.test_dataloader(), 0.6, 0.5, self.scaled_anchors)
-            epoch = self.trainer.current_epoch
-            print(f"Currently epoch {epoch}")
+            print(f"Currently epoch {epoch-1}")
             print("On Train loader:")
             check_class_accuracy(self.model, self.train_dataloader(), threshold=config.CONF_THRESHOLD)        
-        if epoch > 0 and epoch % 3 == 0:
+        if epoch > 30 and epoch % 8 == 0:
             check_class_accuracy(self.model, self.test_dataloader(), threshold=config.CONF_THRESHOLD)
             pred_boxes, true_boxes = get_evaluation_bboxes(
                 self.test_dataloader(),
@@ -162,7 +160,7 @@ class LitYolo(LightningModule):
         pct_start=5/self.trainer.max_epochs,
         three_phase=False,
         div_factor=80,
-        final_div_factor=200,
+        final_div_factor=400,
         anneal_strategy='linear',
             ),
             "interval": "step",
