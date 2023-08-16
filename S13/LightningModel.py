@@ -78,6 +78,7 @@ class LitYolo(LightningModule):
         # Calling self.log will surface up scalars for you in TensorBoard
         self.log("mean_loss = ", mean_loss, prog_bar=True)
         
+        #self.scheduler.step()
         
         
         return loss
@@ -119,6 +120,7 @@ class LitYolo(LightningModule):
             )
             print(f"MAP: {mapval.item()}")
             self.losses =[]
+            self.model.train()
        
             
             
@@ -164,7 +166,7 @@ class LitYolo(LightningModule):
             ),
             "interval": "step",
         }
-        return {"optimizer": self.optimizer, "lr_scheduler": scheduler_dict}
+        return {"lr_scheduler": scheduler_dict} #"optimizer": self.optimizer, 
     
     
     ####################
