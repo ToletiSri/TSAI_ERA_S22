@@ -94,9 +94,9 @@ class LitYolo(LightningModule):
         
     def on_train_epoch_end(self):
         epoch = self.trainer.current_epoch + 1
+        print(f"Currently epoch {epoch-1}")
         if config.SAVE_MODEL:
-            save_checkpoint(self.model, self.optimizer, filename=config.CHECKPOINT_FILE)
-            print(f"Currently epoch {epoch-1}")
+            save_checkpoint(self.model, self.optimizer, filename=config.CHECKPOINT_FILE)            
         if epoch > 1 and epoch % 10 == 0
             plot_couple_examples(self.model, self.test_dataloader(), 0.6, 0.5, self.scaled_anchors)
             print(f"Currently epoch {epoch-1}")
