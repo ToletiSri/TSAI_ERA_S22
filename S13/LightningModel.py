@@ -95,13 +95,14 @@ class LitYolo(LightningModule):
         
     def on_train_epoch_end(self):
         if config.SAVE_MODEL:
-            save_checkpoint(self.model, self.optimizer, filename=config.CHECKPOINT_FILE)  
-        plot_couple_examples(self.model, self.test_dataloader(), 0.6, 0.5, self.scaled_anchors)
+            save_checkpoint(self.model, self.optimizer, filename=config.CHECKPOINT_FILE)
         epoch = self.trainer.current_epoch
-        print(f"Currently epoch {epoch}")
-        print("On Train loader:")
-        check_class_accuracy(self.model, self.train_dataloader(), threshold=config.CONF_THRESHOLD)
-        epoch = self.trainer.current_epoch
+        if epoch > 0 :
+            plot_couple_examples(self.model, self.test_dataloader(), 0.6, 0.5, self.scaled_anchors)
+            epoch = self.trainer.current_epoch
+            print(f"Currently epoch {epoch}")
+            print("On Train loader:")
+            check_class_accuracy(self.model, self.train_dataloader(), threshold=config.CONF_THRESHOLD)        
         if epoch > 0 and epoch % 3 == 0:
             check_class_accuracy(self.model, self.test_dataloader(), threshold=config.CONF_THRESHOLD)
             pred_boxes, true_boxes = get_evaluation_bboxes(
@@ -166,7 +167,7 @@ class LitYolo(LightningModule):
             ),
             "interval": "step",
         }
-        return {"lr_scheduler": scheduler_dict} #"optimizer": self.optimizer, 
+        return {"optimizer": self.optimizer,"lr_scheduler": scheduler_dict} # 
     
     
     ####################
