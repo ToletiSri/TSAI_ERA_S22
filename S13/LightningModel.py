@@ -97,7 +97,7 @@ class LitYolo(LightningModule):
         print(f"Currently epoch {epoch-1}")
         if config.SAVE_MODEL:
             save_checkpoint(self.model, self.optimizer, filename=config.CHECKPOINT_FILE)            
-        if epoch > 1 and epoch % 10 == 0:
+        if epoch == 1 or epoch % 10 == 0:
             plot_couple_examples(self.model, self.test_dataloader(), 0.6, 0.5, self.scaled_anchors)
             print(f"Currently epoch {epoch-1}")
             print("On Train loader:")
@@ -150,7 +150,7 @@ class LitYolo(LightningModule):
         
         
         #suggested_lr = self.lr_finder() #check on self.train_dataloader
-        suggested_lr = 6.25E-03
+        suggested_lr = 1E-03
         
         steps_per_epoch = len(self.train_dataloader())
         scheduler_dict = {
@@ -160,7 +160,7 @@ class LitYolo(LightningModule):
         epochs=self.trainer.max_epochs, 
         pct_start=5/self.trainer.max_epochs,
         three_phase=False,
-        div_factor=80,
+        div_factor=100,
         final_div_factor=400,
         anneal_strategy='linear',
             ),
