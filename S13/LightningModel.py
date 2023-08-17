@@ -150,7 +150,7 @@ class LitYolo(LightningModule):
         
         
         #suggested_lr = self.lr_finder() #check on self.train_dataloader
-        suggested_lr = 7.20E-03
+        suggested_lr = 6.25E-03
         
         steps_per_epoch = len(self.train_dataloader())
         scheduler_dict = {
@@ -160,8 +160,8 @@ class LitYolo(LightningModule):
         epochs=self.trainer.max_epochs, 
         pct_start=5/self.trainer.max_epochs,
         three_phase=False,
-        div_factor=70,
-        final_div_factor=500,
+        div_factor=80,
+        final_div_factor=400,
         anneal_strategy='linear',
             ),
             "interval": "step",
