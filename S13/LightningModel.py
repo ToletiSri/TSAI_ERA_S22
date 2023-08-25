@@ -161,7 +161,7 @@ class LitYolo(LightningModule):
         pct_start=5/self.trainer.max_epochs,
         three_phase=False,
         div_factor=100,
-        final_div_factor=500,
+        final_div_factor=150,
         anneal_strategy='linear',
             ),
             "interval": "step",
