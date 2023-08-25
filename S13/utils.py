@@ -275,6 +275,7 @@ def plot_image(image, boxes):
         )
 
     plt.show()
+    return plt
 
 
 def get_evaluation_bboxes(
@@ -521,6 +522,47 @@ def plot_couple_examples(model, loader, thresh, iou_thresh, anchors):
             bboxes[i], iou_threshold=iou_thresh, threshold=thresh, box_format="midpoint",
         )
         plot_image(x[i].permute(1,2,0).detach().cpu(), nms_boxes)
+        
+def plot_single_image(model, image, thresh, iou_thresh, anchors):
+    model.eval()
+    with torch.no_grad():      
+              
+        import albumentations as A
+        from albumentations.pytorch import ToTensorV2
+        import config
+        print('----------------')
+        print('type of input image before transform = ',type(image))
+        test_transforms = A.Compose(
+            [                          
+                A.Normalize(mean=[0, 0, 0], std=[1, 1, 1], max_pixel_value=255,),
+                ToTensorV2(),
+            ])       
+        
+        img = test_transforms(image=image)
+        print('type of input image after transform = ',type(img))
+        x = img['image'].unsqueeze(0)
+        out = model(x)
+        print('Train end, out size = ',out[0].size())
+        bboxes = [[] for _ in range(x.shape[0])]
+        for i in range(3):
+            batch_size, A, S, _, _ = out[i].shape
+            anchor = anchors[i]
+            boxes_scale_i = cells_to_bboxes(
+                out[i], anchor, S=S, is_preds=True
+            )
+            for idx, (box) in enumerate(boxes_scale_i):
+                bboxes[idx] += box
+
+        model.train()
+   
+    for i in range(batch_size):
+        print('total bboxes input to nms = ', len(bboxes[i][0]))        
+        nms_boxes = non_max_suppression(
+            bboxes[i], iou_threshold=iou_thresh, threshold=thresh, box_format="midpoint",
+        )
+        print('calling to plot bounding boxes image, nms_boxes = ',nms_boxes)
+        fig = plot_image(x[i].permute(1,2,0).detach().cpu(), nms_boxes) 
+        return fig
 
 
 
