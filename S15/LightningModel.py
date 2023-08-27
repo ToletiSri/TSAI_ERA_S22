@@ -59,7 +59,7 @@ class LitTransformer(LightningModule):
         self.val_num_examples = 2
         
         #Train variables
-        self.train_loss = 0
+        self.train_losses =[] 
         
         
     def forward(self, x):
@@ -85,7 +85,8 @@ class LitTransformer(LightningModule):
         # Calling self.log will surface up scalars for you in TensorBoard
         self.log("loss = ", loss.item(), prog_bar=True) 
         #batch_iterator.set_postfix({"loss": f"{loss.item():6.3f}"}) 
-        self.train_loss = loss.item()
+        
+        self.train_losses.append(loss.item())         
             
         # Log the loss 
         self.writer.add_scalar('train,loss', loss.item(), self.trainer.global_step) 
@@ -168,7 +169,8 @@ class LitTransformer(LightningModule):
         
     def on_train_epoch_end(self):
         # Save the model at the end of every epoch   
-        print(f'Loss at end of epoch {self.trainer.current_epoch} = {self.train_loss}')
+        mean_loss = sum(self.train_losses) / len(self.train_losses)
+        print(f'Mean training loss at end of epoch {self.trainer.current_epoch} = {mean_loss}')
         model_filename = get_weights_file_path(self.config, f"{self.trainer.current_epoch:02d}") 
         torch.save({ 
                     'epoch': self.trainer.current_epoch, 
@@ -176,7 +178,7 @@ class LitTransformer(LightningModule):
                     'optimizer_state_dict': self.optimizer.state_dict(), 
                     'global_step': self.trainer.global_step}
                    , model_filename) 
-        self.train_loss = 0
+        self.train_losses = []
             
             
     def greedy_decode(self, model, source, source_mask, tokenizer_src, tokenizer_tgt, max_len, device): 
