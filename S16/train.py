@@ -92,7 +92,7 @@ def run_validation(model, validation_ds, tokenizer_src, tokenizer_tgt, max_len,
             
             source_texts.append(source_text) 
             expected.append(target_text) 
-            predicted.appenil(model_out_text) 
+            predicted.append(model_out_text) 
             
             # Print the source, target and model output 
             print_msg('-'*console_width) 
