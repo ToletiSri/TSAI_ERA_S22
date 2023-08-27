@@ -58,6 +58,9 @@ class LitTransformer(LightningModule):
         self.val_predicted = [] 
         self.val_num_examples = 2
         
+        #Train variables
+        self.train_loss = 0
+        
         
     def forward(self, x):
         return self.model(x)
@@ -82,6 +85,7 @@ class LitTransformer(LightningModule):
         # Calling self.log will surface up scalars for you in TensorBoard
         self.log("loss = ", loss.item(), prog_bar=True) 
         #batch_iterator.set_postfix({"loss": f"{loss.item():6.3f}"}) 
+        self.train_loss = loss.item()
             
         # Log the loss 
         self.writer.add_scalar('train,loss', loss.item(), self.trainer.global_step) 
@@ -90,11 +94,7 @@ class LitTransformer(LightningModule):
         # Backpropagate the loss 
         loss.backward(retain_graph=True) 
             
-        # Update the weights 
-        # optimizer.step() 
-        #optimizer.zero_grad(set_to_none=True) 
-            
-       
+         
         return loss
 
     
@@ -103,8 +103,7 @@ class LitTransformer(LightningModule):
         max_len = self.config['seq_len'] 
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu") 
         
-        if self.val_count == self.val_num_examples:             
-            print('-'*self.console_width)
+        if self.val_count == self.val_num_examples:         
             return 
         
         self.val_count += 1 
@@ -129,7 +128,9 @@ class LitTransformer(LightningModule):
             print('-'*self.console_width) 
             print(f"{f'SOURCE: ':>12}{source_text}") 
             print(f"{f'TARGET: ':>12}{target_text}")
-            print(f"{f'PREDICTED: ':>12}{model_out_text}")        
+            print(f"{f'PREDICTED: ':>12}{model_out_text}")  
+            print('-'*self.console_width)
+            
 
         
             
@@ -166,7 +167,8 @@ class LitTransformer(LightningModule):
               
         
     def on_train_epoch_end(self):
-        # Save the model at the end of every epoch 
+        # Save the model at the end of every epoch   
+        print(f'Loss at end of epoch {self.trainer.current_epoch} = {self.train_loss}')
         model_filename = get_weights_file_path(self.config, f"{self.trainer.current_epoch:02d}") 
         torch.save({ 
                     'epoch': self.trainer.current_epoch, 
@@ -174,7 +176,7 @@ class LitTransformer(LightningModule):
                     'optimizer_state_dict': self.optimizer.state_dict(), 
                     'global_step': self.trainer.global_step}
                    , model_filename) 
-       
+        self.train_loss = 0
             
             
     def greedy_decode(self, model, source, source_mask, tokenizer_src, tokenizer_tgt, max_len, device): 
