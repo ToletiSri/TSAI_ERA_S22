@@ -46,6 +46,10 @@ class LitTransformer(LightningModule):
         except: 
             # If we can't get the console width, use 80 as default 
             self.console_width = 80 
+            
+        # Create the directory if it doesn't exist
+        save_dir = "weights"
+        os.makedirs(save_dir, exist_ok=True)
         
         #Validation variables
         self.val_count = 0 
