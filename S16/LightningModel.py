@@ -311,18 +311,23 @@ class LitTransformer(LightningModule):
        
 
     def train_dataloader(self):                   
-        return DataLoader(self.train_ds, batch_size=self.config['batch_size'], shuffle=True,  num_workers=4, persistent_workers=True, pin_memory=True, collate_fn = self.collate_fn)
+        return DataLoader(self.train_ds, batch_size=self.config['batch_size'], shuffle=True, collate_fn = self.collate_fn)
 
     def val_dataloader(self):
-        return DataLoader(self.val_ds, batch_size=1, shuffle=False,  num_workers=4, persistent_workers=True, pin_memory=True) 
+        return DataLoader(self.val_ds, batch_size=1, shuffle=True) 
     
 
     def test_dataloader(self):
         pass
     
     def collate_fn(self, batch):
+            #print('----------------------------------------------')
             encoder_input_max = max(x["encoder_str_length"] for x in batch)
             decoder_input_max = max(x["decoder_str_length"] for x in batch)
+            #print('----------------------------------------------')
+            #print('encoder_input_max = ',encoder_input_max)
+            #print('decoder_input_max = ',decoder_input_max)
+            #print('----------------------------------------------')
             encoder_inputs = []
             decoder_inputs = []
             encoder_mask = []
