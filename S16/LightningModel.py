@@ -209,7 +209,8 @@ class LitTransformer(LightningModule):
 
         return decoder_input.squeeze(0)
     
-    def configure_optimizers(self): 
+    def configure_optimizers(self):
+        from torch.optim.lr_scheduler import OneCycleLR
         suggested_lr = 10E-03
         
         steps_per_epoch = len(self.train_dataloader())
@@ -222,7 +223,7 @@ class LitTransformer(LightningModule):
         three_phase=True,
         div_factor=10,
         final_div_factor=10,
-        anneal_strategy='cos',
+        anneal_strategy='linear',
             ),
             "interval": "step",
         }
