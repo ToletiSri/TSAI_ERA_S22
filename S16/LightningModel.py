@@ -209,8 +209,24 @@ class LitTransformer(LightningModule):
 
         return decoder_input.squeeze(0)
     
-    def configure_optimizers(self):       
-        return {"optimizer": self.optimizer} # 
+    def configure_optimizers(self): 
+        suggested_lr = 10E-03
+        
+        steps_per_epoch = len(self.train_dataloader())
+        scheduler_dict = {
+            "scheduler":  OneCycleLR(
+        self.optimizer, max_lr=suggested_lr,
+        steps_per_epoch=steps_per_epoch,
+        epochs=self.trainer.max_epochs, 
+        pct_start=10/self.trainer.max_epochs,
+        three_phase=True,
+        div_factor=10,
+        final_div_factor=10,
+        anneal_strategy='cos',
+            ),
+            "interval": "step",
+        }
+        return {"optimizer": self.optimizer, "lr_scheduler": scheduler_dict} # 
     
     
     ####################
