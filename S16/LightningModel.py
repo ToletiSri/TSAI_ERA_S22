@@ -243,7 +243,7 @@ class LitTransformer(LightningModule):
     
     def configure_optimizers(self):
         from torch.optim.lr_scheduler import OneCycleLR
-        suggested_lr = 1E-03
+        suggested_lr = 5E-04
         
         steps_per_epoch = len(self.train_dataloader())
         scheduler_dict = {
@@ -253,7 +253,7 @@ class LitTransformer(LightningModule):
         epochs=self.trainer.max_epochs, 
         pct_start=10/self.trainer.max_epochs,
         three_phase=True,
-        div_factor=10,
+        div_factor=5,
         final_div_factor=10,
         anneal_strategy='linear',
             ),
