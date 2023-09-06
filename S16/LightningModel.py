@@ -192,6 +192,9 @@ class LitTransformer(LightningModule):
         # print loss at the end of every epoch   
         mean_loss = sum(self.train_losses) / len(self.train_losses)
         print(f'Mean training loss at end of epoch {self.trainer.current_epoch} = {mean_loss}')
+
+        scheduler = self.trainer.optimizers[0]['lr_scheduler']
+        print(f'LR = {scheduler.get_last_lr()}')
         
         # Save the model at the end of every 5th epoch - to save memory
         curr_epoch = self.trainer.current_epoch + 1
