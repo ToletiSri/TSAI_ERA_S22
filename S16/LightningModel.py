@@ -36,7 +36,8 @@ class LitTransformer(LightningModule):
         self.console_width = 80
         
         # Tensorboard 
-        self.writer = SummaryWriter(config['experiment_name'])       
+        self.writer = SummaryWriter(config['experiment_name'])  
+        self.scaler = torch.cuda.amp.GradScaler()
         
         try: 
             # get the console window width 
@@ -84,9 +85,18 @@ class LitTransformer(LightningModule):
             # Log the loss 
             self.writer.add_scalar('train,loss', loss.item(), self.trainer.global_step) 
             self.writer.flush() 
-
+            
+            self.optimizer.zero_grad() 
+            
             # Backpropagate the loss 
-            loss.backward(retain_graph=True) 
+            self.scaler.scale(loss).backward(retain_graph=True)
+            
+            #Update weights
+            #self.scaler.step(self.optimizer)    
+            self.optimizer.step()
+
+            # Backpropagate the loss - without scaler
+            #loss.backward(retain_graph=True) 
             
         # Update the weights 
         # optimizer.step() 
@@ -94,7 +104,16 @@ class LitTransformer(LightningModule):
             
        
         return loss
-
+    
+    def training_step_end(self, batch, batch_idx):
+        # Access the scheduler
+        scheduler = self.trainer.optimizers[0]['lr_scheduler']
+        # Your train step end logic goes here
+        scale = self.scaler.get_scale()
+        self.scaler.update()
+        skip_lr_sched = (scale > self.sceler.get_scale())
+        if not skip_lr_sched:
+            scheduler.step()
     
 
     def validation_step(self, batch, batch_idx):       
@@ -164,14 +183,16 @@ class LitTransformer(LightningModule):
               
         
     def on_train_epoch_end(self):
-        # Save the model at the end of every epoch 
-        model_filename = get_weights_file_path(self.config, f"{self.trainer.current_epoch:02d}") 
-        torch.save({ 
-                    'epoch': self.trainer.current_epoch, 
-                    'model_state_dict': self.model.state_dict(), 
-                    'optimizer_state_dict': self.optimizer.state_dict(), 
-                    'global_step': self.trainer.global_step}
-                   , model_filename) 
+        # Save the model at the end of every 5th epoch - to save memory
+        curr_epoch = self.trainer.current_epoch + 1
+        if curr_epoch % 5 == 0:
+            model_filename = get_weights_file_path(self.config, f"{self.trainer.current_epoch:02d}") 
+            torch.save({ 
+                        'epoch': self.trainer.current_epoch, 
+                        'model_state_dict': self.model.state_dict(), 
+                        'optimizer_state_dict': self.optimizer.state_dict(), 
+                        'global_step': self.trainer.global_step}
+                       , model_filename) 
        
             
             
@@ -211,7 +232,7 @@ class LitTransformer(LightningModule):
     
     def configure_optimizers(self):
         from torch.optim.lr_scheduler import OneCycleLR
-        suggested_lr = 10E-03
+        suggested_lr = 1E-03
         
         steps_per_epoch = len(self.train_dataloader())
         scheduler_dict = {
