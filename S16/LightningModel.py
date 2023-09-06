@@ -55,6 +55,9 @@ class LitTransformer(LightningModule):
         self.val_predicted = [] 
         self.val_num_examples = 2
         
+        #Train variables
+        self.train_losses =[] 
+        
         
     def forward(self, x):
         return self.model(x)
@@ -81,6 +84,8 @@ class LitTransformer(LightningModule):
             # Calling self.log will surface up scalars for you in TensorBoard
             self.log("loss = ", loss.item(), prog_bar=True) 
             #batch_iterator.set_postfix({"loss": f"{loss.item():6.3f}"}) 
+            
+            self.train_losses.append(loss.item())
             
             # Log the loss 
             self.writer.add_scalar('train,loss', loss.item(), self.trainer.global_step) 
@@ -121,7 +126,7 @@ class LitTransformer(LightningModule):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu") 
         
         if self.val_count == self.val_num_examples:             
-            print('-'*self.console_width)
+            #print('-'*self.console_width)
             return 
         
         self.val_count += 1 
@@ -146,7 +151,8 @@ class LitTransformer(LightningModule):
             print('-'*self.console_width) 
             print(f"{f'SOURCE: ':>12}{source_text}") 
             print(f"{f'TARGET: ':>12}{target_text}")
-            print(f"{f'PREDICTED: ':>12}{model_out_text}")        
+            print(f"{f'PREDICTED: ':>12}{model_out_text}") 
+            print('-'*self.console_width)
 
         
             
@@ -183,6 +189,10 @@ class LitTransformer(LightningModule):
               
         
     def on_train_epoch_end(self):
+        # print loss at the end of every epoch   
+        mean_loss = sum(self.train_losses) / len(self.train_losses)
+        print(f'Mean training loss at end of epoch {self.trainer.current_epoch} = {mean_loss}')
+        
         # Save the model at the end of every 5th epoch - to save memory
         curr_epoch = self.trainer.current_epoch + 1
         if curr_epoch % 5 == 0:
@@ -193,6 +203,7 @@ class LitTransformer(LightningModule):
                         'optimizer_state_dict': self.optimizer.state_dict(), 
                         'global_step': self.trainer.global_step}
                        , model_filename) 
+        self.train_losses = []
        
             
             
