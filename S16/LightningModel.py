@@ -67,7 +67,8 @@ class LitTransformer(LightningModule):
         encoder_input = batch['encoder_input'].to(device) # (B, seq_len)
         decoder_input = batch['decoder_input'].to(device) # (B, seq_len) 
         encoder_mask = batch['encoder_mask'].to(device) # (B, 1, 1, seq_len) 
-        decoder_mask = batch['decoder_mask'].to(device) # (B, 1, seq_len,-seq_len) 
+        decoder_mask = batch['decoder_mask'].to(device) # (B, 1, seq_len,-seq_len)     
+        
         
         with torch.cuda.amp.autocast(enabled=True):
             
@@ -110,15 +111,13 @@ class LitTransformer(LightningModule):
        
         return loss
     
-    def training_step_end(self, batch, batch_idx):
-        # Access the scheduler
-        scheduler = self.trainer.optimizers[0]['lr_scheduler']
+    def training_step_end(self, batch, batch_idx):        
         # Your train step end logic goes here
         scale = self.scaler.get_scale()
         self.scaler.update()
         skip_lr_sched = (scale > self.sceler.get_scale())
         if not skip_lr_sched:
-            scheduler.step()
+            self.scheduler.step()
     
 
     def validation_step(self, batch, batch_idx):       
@@ -192,9 +191,8 @@ class LitTransformer(LightningModule):
         # print loss at the end of every epoch   
         mean_loss = sum(self.train_losses) / len(self.train_losses)
         print(f'Mean training loss at end of epoch {self.trainer.current_epoch} = {mean_loss}')
-
-        scheduler = self.trainer.optimizers[0]['lr_scheduler']
-        print(f'LR = {scheduler.get_last_lr()}')
+        
+        print(f'LR at end of epoch {self.trainer.current_epoch} = {self.scheduler.get_last_lr()}')
         
         # Save the model at the end of every 5th epoch - to save memory
         curr_epoch = self.trainer.current_epoch + 1
@@ -249,17 +247,18 @@ class LitTransformer(LightningModule):
         suggested_lr = 3E-04
         
         steps_per_epoch = len(self.train_dataloader())
+        self.scheduler = OneCycleLR(
+            self.optimizer, max_lr=suggested_lr,
+            steps_per_epoch=steps_per_epoch,
+            epochs=self.trainer.max_epochs, 
+            pct_start=10/self.trainer.max_epochs,
+            three_phase=True,
+            div_factor=3,
+            final_div_factor=10,
+            anneal_strategy='linear',
+            )
         scheduler_dict = {
-            "scheduler":  OneCycleLR(
-        self.optimizer, max_lr=suggested_lr,
-        steps_per_epoch=steps_per_epoch,
-        epochs=self.trainer.max_epochs, 
-        pct_start=10/self.trainer.max_epochs,
-        three_phase=True,
-        div_factor=3,
-        final_div_factor=10,
-        anneal_strategy='linear',
-            ),
+            "scheduler": self.scheduler ,
             "interval": "step",
         }
         return {"optimizer": self.optimizer, "lr_scheduler": scheduler_dict} # 
