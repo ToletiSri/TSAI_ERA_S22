@@ -63,6 +63,7 @@ class LitTransformer(LightningModule):
         return self.model(x)
 
     def training_step(self, batch, batch_idx):
+        #print('--------------TRAIN STEP START----------------')      
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         encoder_input = batch['encoder_input'].to(device) # (B, seq_len)
         decoder_input = batch['decoder_input'].to(device) # (B, seq_len) 
@@ -84,40 +85,49 @@ class LitTransformer(LightningModule):
             loss = self.loss_fn(proj_output.view(-1, self.tokenizer_tgt.get_vocab_size()), label.view(-1)) 
             # Calling self.log will surface up scalars for you in TensorBoard
             self.log("loss = ", loss.item(), prog_bar=True) 
-            #batch_iterator.set_postfix({"loss": f"{loss.item():6.3f}"}) 
+            #batch_iterator.set_postfix({"loss": f"{loss.item():6.3f}"}) # Check for NaN or Inf values in gradients
             
-            self.train_losses.append(loss.item())
-            
-            # Log the loss 
-            self.writer.add_scalar('train,loss', loss.item(), self.trainer.global_step) 
-            self.writer.flush() 
-            
-            self.optimizer.zero_grad() 
-            
-            # Backpropagate the loss 
-            self.scaler.scale(loss).backward(retain_graph=True)
-            
-            #Update weights
-            #self.scaler.step(self.optimizer)    
-            self.optimizer.step()
+            if torch.isnan(loss) or torch.isinf(loss):
+                # Handle NaN or Inf values here (e.g., skip the gradient update)
+                print("NaN or Inf loss encountered. Skipping gradient update.")
+            else:          
+                self.train_losses.append(loss.item())
 
-            # Backpropagate the loss - without scaler
-            #loss.backward(retain_graph=True) 
-            
-        # Update the weights 
-        # optimizer.step() 
-        #optimizer.zero_grad(set_to_none=True) 
-            
+                # Log the loss 
+                self.writer.add_scalar('train,loss', loss.item(), self.trainer.global_step) 
+                self.writer.flush() 
+
+                self.optimizer.zero_grad()              
+                
+                #print(f'Loss  = {loss}')
+                # Backpropagate the loss 
+                self.scaler.scale(loss).backward(retain_graph=True)
+                
+                scale = self.scaler.get_scale()
+
+                #Update weights
+                self.scaler.step(self.optimizer)    
+                #self.optimizer.step()
+                         
+                self.scaler.update()
+                skip_lr_sched = (scale > self.scaler.get_scale())
+                if not skip_lr_sched:
+                    #sprint('--------UPDATING SCHEDULER STEP HERE------------------')
+                    self.scheduler.step()                  
        
-        return loss
+            return loss
     
-    def training_step_end(self, batch, batch_idx):        
+    def training_step_end(self, batch, batch_idx): 
+        print('-----TRAIN STEP END----FUNCTION NOT CALLED AT ALL-------')        
+        print(f'LR at end of epoch {self.trainer.current_epoch} = {self.scheduler.get_last_lr()}')
         # Your train step end logic goes here
         scale = self.scaler.get_scale()
         self.scaler.update()
         skip_lr_sched = (scale > self.sceler.get_scale())
         if not skip_lr_sched:
+            print('--------UPDATING SCHEDULER STEP HERE------------------')
             self.scheduler.step()
+        
     
 
     def validation_step(self, batch, batch_idx):       
@@ -261,7 +271,7 @@ class LitTransformer(LightningModule):
             "scheduler": self.scheduler ,
             "interval": "step",
         }
-        return {"optimizer": self.optimizer, "lr_scheduler": scheduler_dict} # 
+        return {"optimizer": self.optimizer} #, "lr_scheduler": scheduler_dict} # 
     
     
     ####################
