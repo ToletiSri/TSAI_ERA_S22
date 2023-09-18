@@ -30,7 +30,7 @@ class VAE(pl.LightningModule):
         # for the gaussian likelihood
         self.log_scale = nn.Parameter(torch.Tensor([0.0]))
         
-        self.train_loss = 0
+        self.train_losses = []
 
     def configure_optimizers(self):
         return torch.optim.Adam(self.parameters(), lr=1e-4)
@@ -99,10 +99,12 @@ class VAE(pl.LightningModule):
             'kl': kl.mean(),
         })
         
-        self.train_loss = elbo
+        self.train_losses.append(elbo)
         return elbo
     
     def on_train_epoch_end(self):
-        # print loss at the end of every epoch        
-        print(f'Training loss at end of epoch {self.trainer.current_epoch} = {self.train_loss}')
+        # print loss at the end of every epoch  
+        mean_loss = sum(self.train_losses) / len(self.train_losses)      
+        print(f'Training loss at end of epoch {self.trainer.current_epoch} = {mean_loss}')
+        self.train_losses = []
         
