@@ -33,8 +33,27 @@ class VAE(pl.LightningModule):
         self.train_losses = []
 
     def configure_optimizers(self):
-        return torch.optim.Adam(self.parameters(), lr=1e-4)
+        from torch.optim.lr_scheduler import OneCycleLR
 
+        optimizer = torch.optim.Adam(self.parameters(), lr=1e-4)      
+        steps_per_epoch = len(self.trainer.datamodule.train_dataloader())
+        self.scheduler = OneCycleLR(
+            optimizer, max_lr=1e-3,
+            steps_per_epoch=steps_per_epoch,
+            epochs=self.trainer.max_epochs, 
+            pct_start=10/self.trainer.max_epochs,
+            three_phase=True,
+            div_factor=10,
+            final_div_factor=10,
+            anneal_strategy='linear',
+            )
+        scheduler_dict = {
+            "scheduler": self.scheduler ,
+            "interval": "step",
+        }
+        return {"optimizer": optimizer, "lr_scheduler": scheduler_dict} #
+        #return torch.optim.Adam(self.parameters(), lr=1e-3) 
+         
     def gaussian_likelihood(self, mean, logscale, sample):
         scale = torch.exp(logscale)
         dist = torch.distributions.Normal(mean, scale)
