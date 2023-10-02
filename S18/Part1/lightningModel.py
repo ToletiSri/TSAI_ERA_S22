@@ -65,6 +65,7 @@ class CustomUnet(pl.LightningModule):
                     
     
     def on_train_epoch_end(self):
-        # print loss at the end of every epoch        
-        print(f'Training loss at end of epoch {self.trainer.current_epoch} = {torch.mean(self.train_losses)}')
+        # print loss at the end of every epoch   
+        mean_loss = sum(self.train_losses) / len(self.train_losses)
+        print(f'Mean training loss at end of epoch {self.trainer.current_epoch} = {mean_loss}')
         
