@@ -5,7 +5,7 @@ import pytorch_lightning as pl
 from torchvision import transforms    
     
 class OxfordIIITPetsCustomDataModule(pl.LightningDataModule):
-    def __init__(self, data_dir_train='data\\OxfordPets\\train', data_dir_test='data\\OxfordPets\\test', batch_size=32):
+    def __init__(self, data_dir_train='data\\OxfordPets\\train', data_dir_test='data\\OxfordPets\\test', batch_size=16):
         super().__init__()       
         self.data_dir_train = data_dir_train
         self.data_dir_test = data_dir_test
