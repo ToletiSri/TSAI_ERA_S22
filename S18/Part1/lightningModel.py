@@ -45,7 +45,7 @@ class CustomUnet(pl.LightningModule):
             loss = criterion(predicted_output, target_labels)
             self.train_losses.append(loss.item())
 
-            loss.backward()
+            loss.backward(retain_graph=True)
 
             return loss
         
@@ -59,7 +59,7 @@ class CustomUnet(pl.LightningModule):
             loss = dice_loss(result_tensor_predicted, target_masks)
             self.train_losses.append(loss.item())
             
-            loss.backward()
+            loss.backward(retain_graph=True)
 
             return loss
                     
