@@ -51,13 +51,8 @@ class CustomUnet(pl.LightningModule):
         
         else: #Dice loss
 
-            # From the probability of predictions for 3 classes, construct the actual prediction of values - 1,2,3
-            max_channels = torch.argmax(pred_mask_prob, dim=1) + 1
-            result_tensor_predicted = max_channels.unsqueeze(1)
-
-            #print(result_tensor_predicted.shape)
             criterion = DiceLoss()
-            loss = criterion(result_tensor_predicted, target_masks)
+            loss = criterion(pred_mask_prob, target_masks)
             self.train_losses.append(loss.item())
             
             loss.backward(retain_graph=True)
