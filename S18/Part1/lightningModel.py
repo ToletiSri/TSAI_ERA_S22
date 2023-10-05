@@ -56,7 +56,8 @@ class CustomUnet(pl.LightningModule):
             result_tensor_predicted = max_channels.unsqueeze(1)
 
             #print(result_tensor_predicted.shape)
-            loss = dice_loss(result_tensor_predicted, target_masks)
+            criterion = DiceLoss()
+            loss = criterion(result_tensor_predicted, target_masks)
             self.train_losses.append(loss.item())
             
             loss.backward(retain_graph=True)
