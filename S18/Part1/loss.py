@@ -1,16 +1,16 @@
-def dice_loss(pred, target):
-    smooth = 1e-5
+#def dice_loss(pred, target):
+#    smooth = 1e-5
     
-    # flatten predictions and targets
-    pred = pred.view(-1)
-    target = target.view(-1)
+#    # flatten predictions and targets
+#    pred = pred.view(-1)
+#    target = target.view(-1)
     
-    intersection = (pred * target).sum()
-    union = pred.sum() + target.sum()
+#    intersection = (pred * target).sum()
+#    union = pred.sum() + target.sum()
     
-    dice = (2. * intersection + smooth) / (union + smooth)
+#    dice = (2. * intersection + smooth) / (union + smooth)
     
-    return 1 - dice  
+#    return 1 - dice  
 
 
 import torch
@@ -42,15 +42,7 @@ class DiceLoss(nn.Module):
         # Calculate intersection and union for the foreground
         intersection = torch.sum(mask_pred_foreground * mask_target_foreground, dim=(1, 2, 3))
         union = torch.sum(mask_pred_foreground + mask_target_foreground, dim=(1, 2, 3))  # Union = A + B - Intersection
-
-        
-        # Flatten predictions and targets
-        # pred = pred.view(-1)
-        # target = target.view(-1)
-        
-        # intersection = (pred * target).sum()
-        # union = pred.sum() + target.sum()
         
         dice = (2. * intersection + smooth) / (union + smooth)
-        
-        return 1 - dice
+      
+        return torch.mean(1 - dice)
