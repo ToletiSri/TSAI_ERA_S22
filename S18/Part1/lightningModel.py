@@ -2,7 +2,7 @@ import pytorch_lightning as pl
 import torch
 from torch import nn
 from model import UNet
-from loss import dice_loss
+from loss import DiceLoss
 
 
 
