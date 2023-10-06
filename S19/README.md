@@ -3,7 +3,8 @@
 This folder consists of Assignment-19 from ERA course offered by - TSAI(The school of AI). 
 Follow https://theschoolof.ai/ for more updates on TSAI
 
-Assignment-19
+##### Assignment-19
+
 Make a CLIP or FastSAM application on gradio/spaces using open-source models. 
 - You may use the open source pre-trained models for CLIP or FastSAM
 
