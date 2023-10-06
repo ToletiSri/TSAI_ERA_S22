@@ -23,7 +23,23 @@ HINT: You need to have some percent of incorrect input-label pairs duting your t
 ### RESULTS:
 
 - Part 1:
- TBD
+UNET
+
+ MaxPooling(Contracting Block) + Transpose Convolution(Expanding Block) + Cross Entropy Loss:
+ 
+[![](https://github.com/ToletiSri/TSAI_ERA_Assignments/blob/0780bdde66335d4252511f48907ff512698c213c/S18/Part1/results_images/MP_Tr_CE.png)](https://github.com/ToletiSri/TSAI_ERA_Assignments/blob/0780bdde66335d4252511f48907ff512698c213c/S18/Part1/results_images/MP_Tr_CE.png)
+
+ MaxPooling(Contracting Block) + Transpose Convolution(Expanding Block) + Dice Loss:
+ 
+[![](https://github.com/ToletiSri/TSAI_ERA_Assignments/blob/0780bdde66335d4252511f48907ff512698c213c/S18/Part1/results_images/MP_Tr_DL.png)](https://github.com/ToletiSri/TSAI_ERA_Assignments/blob/0780bdde66335d4252511f48907ff512698c213c/S18/Part1/results_images/MP_Tr_DL.png)
+
+ StridedConvolution(Contracting Block) + Transpose Convolution(Expanding Block) + Cross Entropy Loss:
+ 
+[![](https://github.com/ToletiSri/TSAI_ERA_Assignments/blob/0780bdde66335d4252511f48907ff512698c213c/S18/Part1/results_images/StrConv_Tr_CE.png)](https://github.com/ToletiSri/TSAI_ERA_Assignments/blob/0780bdde66335d4252511f48907ff512698c213c/S18/Part1/results_images/StrConv_Tr_CE.png)
+
+ StridedConvolution(Contracting Block) + Upsampling (Expanding Block) + Dice Loss:
+ 
+[![](https://github.com/ToletiSri/TSAI_ERA_Assignments/blob/0780bdde66335d4252511f48907ff512698c213c/S18/Part1/results_images/StrConv_Ups_DL.png)](https://github.com/ToletiSri/TSAI_ERA_Assignments/blob/0780bdde66335d4252511f48907ff512698c213c/S18/Part1/results_images/StrConv_Ups_DL.png)
 
 - Part 2: 
 -- MNIST: 
