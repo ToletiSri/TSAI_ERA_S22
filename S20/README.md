@@ -12,6 +12,7 @@ Convert this into an app on Huggingface (and share it on LinkedIn to get 500 ext
 
 ### Implementation and Results:
 Used 4 different styles of text inversions for a puppy. - madubani art style, line style, pokymon style and concept-art style. (Refer notebook for images)
+
 Applied saturation loss to pokemon style puppy. (tried converting RGB image to HSV image to fetch saturation, but, this resulted in loss of gradients. So, saturations calculated using formula)
 We see that the custom saturation loss function nudges the image to have less saturation while creating the image.
 (Results in notebook)
