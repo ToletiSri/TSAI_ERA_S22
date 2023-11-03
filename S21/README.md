@@ -8,8 +8,11 @@ Refer to this [Video](https://www.youtube.com/watch?v=kCc8FmEb1nY&t=2s&ab_channe
 
 ### Implementation and Results:
 Trained the GPT model as per Andrej Karapathy's instructions in [GitHub](https://github.com/karpathy/ng-video-lecture)
-There are 2 notebooks in this repo
+
+There are 2 notebooks in this repo:
+
 S21 - Jupyter notebook that has been used to train the model, also prints a Shakespeare like text after training during inferencing.
+
 GradioInterface - A simple gradio interface that accepts a text and length, and generates shakespeare like test starting with the given text and given size
 
 #### Results:
