@@ -1,9 +1,9 @@
-# The School of AI - ERA(Extensive & Reimagined AI Program) - Assignment 20
+# The School of AI - ERA(Extensive & Reimagined AI Program) - Assignment 21
 
 This folder consists of Assignment-21 from ERA course offered by - TSAI(The school of AI). 
 Follow https://theschoolof.ai/ for more updates on TSAI
 
-Assignment-20
+Assignment-21
 Refer to this [Video](https://www.youtube.com/watch?v=kCc8FmEb1nY&t=2s&ab_channel=AndrejKarpathy) and train your gpt model. Port this huggingface spaces
 
 ### Implementation and Results:
